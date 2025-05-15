@@ -2,7 +2,16 @@ package com.example.a100daysofpushup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.arch.core.internal.SafeIterableMap;
-import androidx.core.app.NotificationCompatSideChannelService;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.Api;
+import com.example.a100daysofpushup.leaderboard.LeaderboardActivity;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -10,7 +19,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.util.Log;
 import android.widget.TextView;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,7 +36,13 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "GoogleSignIn";
+    private Button viewLeaderboardButton;
     final Map<String, ArrayList<String>> dataMap = new HashMap<String, ArrayList<String>>();
+ private static final int RC_SIGN_IN = 9001;
+ private GoogleSignInClient mGoogleSignInClient;
+ private static final String SCRIPT_URL = "YOUR_WEB_APP_URL_HERE"; // Replace with your Apps Script web app URL
+ private SignInButton signInButton;
     String[] day1 = new String[]{"1", "5 Push ups + 1 minute plank", "Embrace the challenge"};
     String[] day2 = new String[]{"2", "6 Push ups minimum + 1 minute plank", "It has been a fantastic start!"};
     String[] day3 = new String[]{"3", "7 Push ups minimum + 1 minute plank", "it is easy to give you a chart and say do your pushups as per this. That is not our purpose. The idea is to interact with each other, send you the message and talk with you and motivate each other! Yes, we are in this challenge together!"};
@@ -214,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView nextDayCount = (TextView) findViewById(R.id.nextDayCount);
                 int dayCount = Integer.parseInt(editDay.getText().toString());
 
+ sendPushupDataToSheet(userName, dayCount); // Send data to Google Sheet
                 //find count between today's date and day of joining
                 String start_date = get2ndValFromList(userName);
                 int dayInit = DateOps.findDifferenceCurrentDate(start_date);
@@ -321,9 +344,103 @@ public class MainActivity extends AppCompatActivity {
      @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+ setContentView(R.layout.activity_main);
 
-        ImageView up = (ImageView) findViewById(R.id.imageUp);
-        up.animate().alpha(1).scaleXBy(1).scaleYBy(1).setDuration(1000);
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+ GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+ .requestEmail()
+ .build();
+
+        // Build a GoogleSignInClient with the options specified by gso.
+ mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        // Set the dimensions of the sign-in button.
+ signInButton = findViewById(R.id.sign_in_button);
+ signInButton.setSize(SignInButton.SIZE_STANDARD);
+
+ signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+ signIn();
+            }
+        });
+
+        // Find the View Leaderboard button and set an OnClickListener
+        viewLeaderboardButton = findViewById(R.id.view_leaderboard_button);
+        viewLeaderboardButton.setOnClickListener(new View.OnClickListener() {
+ @Override
+ public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, LeaderboardActivity.class));
+            }
+        });
+
+    }
+ private void signIn() {
+ Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+ startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+ super.onActivityResult(requestCode, resultCode, data);
+
+ // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+ if (requestCode == RC_SIGN_IN) {
+ // The Task returned from this call is always completed, no need to attach
+ // a listener.
+ Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+ handleSignInResult(task);
+ }
+    }
+
+ private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+ try {
+ GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+ // Signed in successfully, log user information.
+ Log.d(TAG, "signInResult: success");
+ Log.d(TAG, "Display Name: " + account.getDisplayName());
+ Log.d(TAG, "Email: " + account.getEmail());
+ // You can also get the user's ID and profile picture URI
+ // String personId = account.getId();
+ // Uri personPhoto = account.getPhotoUrl();
+
+ } catch (ApiException e) {
+ // The ApiException status code indicates the detailed failure reason.
+ // Please refer to the GoogleSignInStatusCodes class reference for more information.
+ Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+ // You could show an error message to the user here, e.g., with a Toast
+ }
+    }
+
+    private void sendPushupDataToSheet(String username, int pushupCount) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection urlConnection = null;
+                try {
+                    URL url = new URL(SCRIPT_URL);
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("POST");
+                    urlConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+                    urlConnection.setDoOutput(true);
+
+                    String jsonInputString = "{\"username\": \"" + username + "\", \"pushupCount\": " + pushupCount + "}";
+
+                    try(OutputStream os = urlConnection.getOutputStream()) {
+                        byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+                        os.write(input, 0, input.length);
+                    }
+
+                    int responseCode = urlConnection.getResponseCode();
+                    Log.d(TAG, "HTTP POST response code: " + responseCode);
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Error sending data to Google Sheet", e);
+                } finally {
+                    if (urlConnection != null) urlConnection.disconnect();
+                }
+            }
+        }).start();
     }
 }

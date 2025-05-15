@@ -7,18 +7,16 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/challengeTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="10dp"
         android:layout_marginRight="5dp"
-        android:layout_marginBottom="800dp"
+        android:layout_marginTop="16dp"
         android:text="100 Days of Push Up Challenge"
         android:textColor="#E91E63"
         android:textSize="27dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.482"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -29,13 +27,10 @@
         android:id="@+id/textWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="8dp"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/motivationMessage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.009"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.721" />
@@ -44,13 +39,11 @@
         android:id="@+id/motivationMessage"
         android:layout_width="388dp"
         android:layout_height="100dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -60,13 +53,10 @@
         android:id="@+id/nextDayCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.004"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/motivationMessage"
@@ -74,7 +64,7 @@
 
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/nextDayCountButton"
         android:layout_width="163dp"
         android:layout_height="45dp"
         android:layout_marginStart="12dp"
@@ -85,9 +75,9 @@
         android:text="Next Day Count"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.142"\
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/versionInfoTextView"
         app:layout_constraintVertical_bias="0.37" />
 
     <EditText
@@ -108,7 +98,7 @@
 
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/updateLinkButton"
         android:layout_width="163dp"
         android:layout_height="45dp"
         android:onClick="goToURL"
@@ -128,7 +118,7 @@
         android:alpha="0"
         android:onClick="fade"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"\
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
@@ -152,6 +142,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editUser"
         app:layout_constraintVertical_bias="0.0" />
+    
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editDay"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintVertical_bias="0.0"
+         />
+
+    <Button
+        android:id="@+id/view_leaderboard_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Leaderboard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sign_in_button"/>
 
     <Button
         android:id="@+id/viewResult"
@@ -160,13 +171,11 @@
         android:onClick="goToViewURL"
         android:text="View Result"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/updateLinkButton" // Make sure this reference is correct
         app:layout_constraintHorizontal_bias="0.136"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.449" />
-
-
     <Button
         android:layout_width="163dp"
         android:layout_height="45dp"
@@ -174,14 +183,14 @@
         android:onClick="showDatePickerDialog"
         android:text="Register New User"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"\
         app:layout_constraintHorizontal_bias="0.062"
         app:layout_constraintStart_toStartOf="@+id/button"
         app:layout_constraintTop_toBottomOf="@+id/button2"
         app:layout_constraintVertical_bias="0.296" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/developerInfoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -194,7 +203,7 @@
         app:layout_constraintVertical_bias="0.967" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/versionInfoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -205,7 +214,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/developerInfoTextView" />
 
     <Button
         android:id="@+id/editDelete"
@@ -229,7 +238,7 @@
         android:layout_marginBottom="30dp"
         android:alpha="0"
         android:onClick="fade1"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintBottom_toTopOf="@+id/developerInfoTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.477"
         app:layout_constraintStart_toStartOf="parent"
